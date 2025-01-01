@@ -43,13 +43,43 @@
       $(function() {
         $('#convertForm').submit(function(event) {
           event.preventDefault();
+          //reset result and error
+          $('#result').text('');
+          $('#error').text('');
+          $('#jsonResult').text('');
+          //validasi
+          const input = $('#convertField').val();
+          if(!input){
+            $('#error').text('Input cannot be empty!');
+            return;
+          }
+          const regex = /^[\d\.\/\w]+$/;
+          if(!regex.test(input)){
+            $('#error').text('Invalid character in input!');
+            return;
+          }
+
           $.ajax({
             url: '/api/convert',
             type: 'get',
             data: $('#convertForm').serialize(),
+            beforeSend:function(){
+              $('#result').text('Loading...');
+            },
             success: function(data) {
-              $('#result').text(data.string || data);
-              $('#jsonResult').text(JSON.stringify(data));
+              $('#result').text('');
+              $('#error').text('');
+
+              if(typeof data === 'string'){
+                $('#error').text(data);
+              }else{
+                $('#result').text(data.string);
+                $('#jsonResult').text(JSON.stringify(data,null,2));
+              }
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+              $('#result').text('');
+              $('#error').text('Error: '+textStatus+', '+errorThrown);
             }
           });
         });

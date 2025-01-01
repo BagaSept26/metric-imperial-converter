@@ -9,7 +9,7 @@ module.exports = function (app) {
 
 
   //Route untuk API konversi
-  app.route('/api/converts')
+  app.route('/api/convert')
   .get((req,res)=>{
     //ambiil input dari querry parameter
     let input = req.query.input;
@@ -24,9 +24,11 @@ module.exports = function (app) {
 
     //validasi input
     if(initNum === null && initUnit === null){
-      return res.json("invalid number");
+      return res.json("invalid number & unit");
     }
     else if(initNum === null){
+      return res.json("invalid number")
+    }else if(initUnit === null){
       return res.json("invalid unit")
     }
 
@@ -38,7 +40,7 @@ module.exports = function (app) {
     if(returnUnit === null){
       return res.json("Invalid unit");
     }
-
+    //membuat string output
     let string = convertHandler.getString(initNum,initUnit,returnNum,returnUnit);
 
     //mengirim respon JSON

@@ -1,150 +1,283 @@
+// Perubahan: Menambahkan inputRegex dan apiRegex di luar fungsi
+let inputRegex = /[a-z]+|[^a-z]+/gi;
+let apiRegex = /\/api\/convert\?input=/i;
+
 function ConvertHandler() {
-  
-  this.getNum = function(input) {
+  this.getNum = function (input) { // Perubahan: Modifikasi fungsi getNum
     let result;
+
+     // Perubahan: Menambahkan console.log dan handling input null
+     console.log(`1. inputNum: ${input}`);
+     if (input === null || input === undefined) return "invalid number";
+
+    if (input.includes("/api/convert?input=")) { // Perubahan: Penanganan input dari API
+      let inputArr = input.split(apiRegex);
+      let regexStr = inputArr[1];
+      // Console 2
+       console.log(`2. regexStr: ${regexStr}`);
+
+      //       ///////////////////////////////////////////////////////////////////////
+      let result = regexStr.match(inputRegex)[0];
+      console.log(`Formated result: ${result}`);
+      //       //////////////////////////////////////////////////////////////////////
+      let numberRegex = /\d/;
+
+      if (numberRegex.test(result) === false) {
+        result = 1;
+      }
+
+      if (result.toString().includes("/")) {
+        let values = result.toString().split("/");
+        // console 3
+         console.log(`splitResult: ${values}`);
+        if (values.length != 2) {
+          return "invalid number";
+        }
+        values[0] = parseFloat(values[0]);
+        values[1] = parseFloat(values[1]);
+        result = parseFloat((values[0] / values[1]).toFixed(5));
+      }
+
+      if (isNaN(result)) {
+        return "invalid number";
+      }
+
+      return Number(result);
+    } else { // Perubahan: Penanganan input bukan dari API
     
-    //Regex utk memisahkan unit
-    let numRegex = /^([\d\.\/]+)/;
-    let match = input.match(numRegex);
+       // console 2.1
+        console.log(`Else input 1: ${input}`);
 
-    if(match){
-      result = mtch[1];
+      if (/^(gal)$|^(l)$|^(lbs)$|^(kg)$|^(mi)$|^(km)$/i.test(input)) return 1;
+      if (!/[\d\/]/g.test(input)) return 1;
+       console.log(`Else input 2: ${input}`);
+       result = input
+        .replace(/\s*/g, "")
+        .match(/^\d*[.]{0,1}\d*\/*\d*[.]{0,1}\d*\w*$/);
+       console.log(`Else input 3: ${result}`);
+      if (result)
+        result = input
+          .replace(/\s*/g, "")
+          .match(/^\d*[.]{0,1}\d*\/*\d*[.]{0,1}\d*\w*$/)[0]
+          .replace(/^[0]*/g, "")
+          .replace(/([.]\d*[1-9])[0]+/, "$1")
+          .replace(/^(\d*[.]{0,1}\d*\/*\d*[.]{0,1}\d*)\w*$/, "$1")
+          .replace(/[.]*$/g, "");
+          console.log(`Else input4 : ${result}`);
+      if (/[.]{2}/g.test(input)) return "invalid number";
+      if (/[.]\d*[.]/g.test(input)) return "invalid number";
+      if (/[\/]{2}/g.test(input)) return "invalid number";
+      if (/[\/]\d*[\/]/g.test(input)) return "invalid number";
 
-        //menangani pecahan '1/2' atau '3/4'
-          if(result.includes('/')){
-            let numbers = result.split('/');
-            if(numbers.length !== 2){
-              result=null; // invalid jika lebih dari 1 '/'
-            } else {
-              try {
-                result = parseFloat(numbers[0]/parseFloat(numbers[1]));
-              } catch(e){
-                result=null; //invalid jika bukan angka
-              }
-            }
-          } else {
-            try {
-              result=parseFloat(result);
-            }catch(e){
-              result = null; //invalid jika bkn angka
-            }
+      console.log(`Regex Result: ${result}`);
+
+      if (result) {
+        if (result.includes("/")) {
+          let values = result.toString().split("/");
+          // console 3
+           console.log(`splitResult: ${values}`);
+          if (values.length != 2) {
+            return "invalid number";
           }
-    } else {
-      result=1; // jika tidak ada angka maka 1
-    }
-    return result;
-  };
-  
-  this.getUnit = function(input) {
-    let result;
-    
-    //Regex utk satuan
-    let unitRegex = /([a-zA-Z]+)$/;
-    let match = input.match(unit.unitRegex);
+          values[0] = parseFloat(values[0]);
+          values[1] = parseFloat(values[1]);
+          result = parseFloat((values[0] / values[1]).toFixed(5));
+        }
+      }
 
-    if(match){
-       result=match[1].toLowerCase(); //mengubah huruf kecil
+      if (isNaN(result)) {
+        return "invalid number";
+      }
 
-       //validasi 
-       let validUnits= ['gal','l','lbs','kg','mi','km'];
-       if(!validUnits.includes(result)){
-        result.null; //Return null jika tdk valid
-       }
-    } else {
-      result = null;
+      return Number(result);
     }
-
-    return result;
-  };
-  
-  this.getReturnUnit = function(initUnit) {
-    let result;
-    if(initUnit === 'gal'){
-      result = '1';
-    } else if(initUnit === '1'){
-      result='gal';
-    }else if(initUnit === 'lbs'){
-      result='kg';
-    }else if(initUnit === 'kg'){
-      result='lbs';
-    }else if(initUnit === 'mi'){
-      result='km';
-    }else if(initUnit === 'km'){
-      result='mi';
-    }else {
-      result=null;
-    }
-    
-    return result;
   };
 
-  this.spellOutUnit = function(unit) {
-    let result;
-    
-    if(unit === 'gal'){
-      result='gallons';
-    }else if(unit==='l'){
-      result='litres';
-    }else if(unit === 'lbs'){
-      result='pounds';
-    }else if(unit === 'kg'){
-      result='kilograms';
-    }else if(unit==='mi'){
-      result='miles';
-    }else if(unit==='km'){
-      result='kilometers';
-    }else{
-      result=null;
+  this.getUnit = function (input) { // Perubahan: Modifikasi fungsi getUnit
+      if (input.includes("/api/convert?input=")) { // Perubahan: Penanganan input dari API
+      let inputArr = input.split(apiRegex);
+      let regexStr = inputArr[1];
+       // Console 2
+         console.log(`regexStr: ${regexStr}`);
+
+      //       ///////////////////////////////////////////////////////////////////////
+       let result = regexStr.match(inputRegex)[1];
+       console.log(`Formated result: ${result}`);
+      //       //////////////////////////////////////////////////////////////////////
+      // console 5
+       console.log(`Unit result: ${result}`);
+      if (!result) {
+        result = regexStr.match(inputRegex)[0];
+      }
+
+      // Perubahan: Validasi unit dengan array
+       let validUnits = [
+        "gal",
+        "l",
+        "mi",
+        "km",
+        "lbs",
+        "kg",
+        "GAL",
+        "L",
+        "MI",
+        "KM",
+        "LBS",
+        "KG",
+      ];
+
+      if (!validUnits.includes(result)) {
+        return "invalid unit";
+      }
+
+      if (result === "l" || result === "L") return "L"; // Perubahan: Mengembalikan "L" jika liter
+
+      return result.toLowerCase(); // Perubahan: Mengembalikan unit dalam lowercase
+    } else {  // Perubahan: Penanganan input bukan dari API
+       var result;
+      // console 4
+       console.log(`inputUnit: ${input}`);
+       result = input.match(inputRegex)[1];
+        // console 5
+        console.log(`Unit result: ${result}`);
+      if (!result) {
+         result = input.match(inputRegex)[0];
+      }
+
+         // Perubahan: Validasi unit dengan array
+        let validUnits = [
+          "gal",
+          "l",
+          "mi",
+          "km",
+          "lbs",
+          "kg",
+          "GAL",
+          "L",
+          "MI",
+          "KM",
+          "LBS",
+          "KG",
+        ];
+
+      if (!validUnits.includes(result)) {
+         return "invalid unit";
+      }
+
+      if (result === "l" || result === "L") return "L";  // Perubahan: Mengembalikan "L" jika liter
+
+      return result.toLowerCase(); // Perubahan: Mengembalikan unit dalam lowercase
+    }
+  };
+
+  this.getReturnUnit = function (initUnit) { // Perubahan: Modifikasi fungsi getReturnUnit
+    var result;
+
+    if (initUnit === "gal" || initUnit === "GAL") {
+      result = "L";
+    } else if (initUnit === "l" || initUnit === "L") { // Perubahan: Menambahkan pengecekan "L"
+      result = "gal";
+    }
+
+    if (initUnit === "lbs" || initUnit === "LBS") {
+      result = "kg";
+    } else if (initUnit === "kg" || initUnit === "KG") {
+      result = "lbs";
+    }
+
+    if (initUnit === "mi" || initUnit === "MI") {
+      result = "km";
+    } else if (initUnit === "km" || initUnit === "KM") {
+      result = "mi";
+    }
+
+     return result;
+  };
+
+  this.spellOutUnit = function (unit) {  // Perubahan: Modifikasi fungsi spellOutUnit
+    var result;
+
+    switch (unit) {
+      case "gal":
+      case "GAL":
+        result = "gallon(s)";
+        break;
+      case "l":
+      case "L":
+        result = "litre(s)";
+        break;
+      case "lbs":
+      case "LBs":
+        result = "pound(s)";
+        break;
+      case "kg":
+      case "KG":
+        result = "kilogram(s)";
+        break;
+      case "mi":
+      case "MI":
+        result = "mile(s)";
+        break;
+      case "km":
+      case "KM":
+        result = "kilometre(s)";
+        break;
     }
 
     return result;
   };
-  
-  this.convert = function(initNum, initUnit) {
+
+  this.convert = function (initNum, initUnit) { // Perubahan: Modifikasi fungsi convert
     const galToL = 3.78541;
     const lbsToKg = 0.453592;
     const miToKm = 1.60934;
-    let result;
-    
-    if(initUnit ==='gal'){
-      result = initNum * galToL;
-    }else if(initUnit ==='l'){
-      result= initNum / galToL;
-    }else if(initUnit ==='lbs'){
-      result=initNum * lbsToKg;
-    }else if(initUnit ==='kg'){
-      result=initNum / lbsToKg;
-    }else if(initUnit ==='mi'){
-      result=initNum * miToKm;
-    }else if(initUnit ==='km'){
-      result = initNum / miToKm;
-    }else{
-      result = null; //jika konversi tidak valid
-    }
-    //pembulatan 5 angka dibelakang koma
-    if(result != null){
-      result=parseFloat(result.toFixed(5));
+    var result;
+
+    if (initUnit === "gal" || initUnit === "GAL") {
+      result = (initNum * galToL).toFixed(5);
+    } else if (initUnit === "l" || initUnit === "L") {  // Perubahan: Menambahkan pengecekan "L"
+      result = (initNum / galToL).toFixed(5);
     }
 
+    if (initUnit === "lbs" || initUnit === "LBS") {
+      result = (initNum * lbsToKg).toFixed(5);
+    } else if (initUnit === "kg" || initUnit === "KG") {
+      result = (initNum / lbsToKg).toFixed(5);
+    }
+
+    if (initUnit === "mi" || initUnit === "MI") {
+      result = (initNum * miToKm).toFixed(5);
+    } else if (initUnit === "km" || initUnit === "KM") {
+      result = (initNum / miToKm).toFixed(5);
+    }
+
+    return parseFloat(result);
+  };
+
+  this.getString = function (initNum, initUnit, returnNum, returnUnit) { // Perubahan: Modifikasi fungsi getString
+    var result;
+
+     // Perubahan: Error handling untuk initNum dan initUnit
+     if (initNum === null) {
+        return 'invalid number';
+      }
+      if (initUnit === null) {
+        return 'invalid unit';
+      }
+      if(returnNum === null){
+        return 'invalid number and unit';
+      }
+    result =
+      initNum +
+      " " +
+      this.spellOutUnit(initUnit) +
+      " converts to " +
+      returnNum +
+      " " +
+      this.spellOutUnit(returnUnit);
 
     return result;
   };
-  
-  this.getString = function(initNum, initUnit, returnNum, returnUnit) {
-    let result;
-    
-    if(initNum === null || initUnit === null || returnNum === null || returnUnit === null){
-      return "Invalid input";
-    }
-
-    let initUnitSpelled = this.spellOutUnit(initUnit);
-    let returnUnitSpelled=this.spellOutUnit(returnUnit);
-
-    result = `${initNum} ${initUnitSpelled} converts to ${returnNum} ${returnUnitSpelled}`;
-
-    return result;
-  };
-  
 }
 
 module.exports = ConvertHandler;
