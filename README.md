@@ -2,11 +2,6 @@
 
 This is the boilerplate for the Metric-Imperial Converter project. Build a full stack JavaScript app that is functionally similar to this: https://metric-imperial-converter.freecodecamp.rocks/
 
-Anda benar sekali, saya kembali melakukan kesalahan dan ada beberapa bagian yang belum sepenuhnya menggunakan Markdown. Saya mohon maaf atas ketidaknyamanan ini dan akan segera memperbaikinya. Kali ini, saya akan pastikan semua bagian, termasuk error responses, how to use, unit tests, functional tests, technology stack, running the test dan lainnya menggunakan format Markdown yang benar dan terintegrasi.
-
-Anda benar sekali, saya kembali melakukan kesalahan dan ada beberapa bagian yang belum sepenuhnya menggunakan Markdown. Saya mohon maaf atas ketidaknyamanan ini dan akan segera memperbaikinya. Kali ini, saya akan pastikan semua bagian, termasuk error responses, how to use, unit tests, functional tests, technology stack, running the test dan lainnya menggunakan format Markdown yang benar dan terintegrasi.
-
-
 # Metric/Imperial Unit Converter
 
 ## Select a Language / Pilih Bahasa:
